@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Toolbar container */
+.fc-toolbar {
+  @apply flex items-center justify-center;
+}
+
+/* All buttons */
+.fc .fc-button {
+  @apply w-20 px-3 py-1 text-sm rounded-md font-medium transition outline-none;
+  @apply bg-white text-black;
+}
+
+/* Hover effect */
+.fc .fc-button:hover {
+  @apply bg-gray-300;
+}
+
+/* Active state */
+.fc .fc-button.fc-button-active {
+  @apply bg-blue-500 text-white;
+}
+
+/* Today button */
+.fc .fc-today-button {
+  @apply bg-black text-white hover:bg-black/80;
+}
+
+/* Prev/Next arrows */
+.fc .fc-prev-button,
+.fc .fc-next-button {
+  @apply bg-black text-white hover:bg-black/80 outline-none;
+}
+
+/* Today indicator */
+.fc .fc-day-today {
+  background-color: #eef1f7 !important;
+}
+
