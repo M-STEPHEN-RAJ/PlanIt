@@ -1,0 +1,51 @@
+import Task from "../models/Task.js";
+import Project from "../models/Project.js";
+
+export const createTask = async (req, res) => {
+    try {
+        const { title, status, assignees, priority, dueDate } = req.body;
+
+        const projectExists = await Project.findById(req.params.projectId);
+        if (!projectExists) {
+            return res.status(404).json({ success: false, message: "Project not found" });
+        }
+
+        const task = await Task.create({
+            projectId: req.params.projectId,
+            title,
+            status,
+            assignees,
+            priority,
+            dueDate,
+            createdBy: req.user._id,
+        });
+
+        res.status(201).json({
+            success: true,
+            message: "Task created successfully",
+            task,
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export const getTasksByProjectId = async (req, res) => {
+    try {
+        const { projectId } = req.params;
+
+        const tasks = await Task.find({ projectId })
+            .populate("assignees", "name email")
+            .populate("createdBy", "name email")
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            count: tasks.length,
+            tasks,
+        });  
+    }
+    catch (error) {
+        res.status(500).json({ success: false, message: error.message });        
+    }
+}

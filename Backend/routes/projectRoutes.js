@@ -1,10 +1,12 @@
-import express from "express";
-import { createProject, getProjects } from "../controllers/projectController.js";
-import Auth from "../middleware/auth.js";
+import express from 'express';
+import { createProject, getUserProjects, getProjectById } from '../controllers/projectController.js';
+import Auth from '../middleware/auth.js'
 
 const router = express.Router();
 
-router.get('/', Auth, getProjects);
-router.post('/', Auth, createProject);
+router.post("/", Auth, createProject);
+router.get("/", Auth, getUserProjects);
 
-export default router
+router.get("/:id", Auth, getProjectById);
+
+export default router;

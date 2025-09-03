@@ -1,10 +1,66 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+import { toast } from 'react-hot-toast';
+import { useNavigate, useParams } from 'react-router-dom'
 import add from '../assets/add-icon.png'
 import more from '../assets/more-icon.png'
 import deadline from '../assets/deadline-icon.png'
 import medium_priority from '../assets/medium-priority.png'
 
 const ProjectDetails = () => {
+
+  const navigate = useNavigate();
+  const { id } = useParams();
+
+  const [project, setProject] = useState({});
+  const [tasks, setTasks] = useState([]);
+
+  const fetchProjectDetails = async () => {
+    try {
+
+        const token = sessionStorage.getItem("authToken");
+
+        if (!token) {
+            toast.error("You must be logged in!");
+            navigate("/login");
+            return;
+        }        
+
+        const res = await axios.get(`http://localhost:5000/api/projects/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        })
+
+        setProject(res.data.project);
+        
+    }
+    catch (error) {
+        toast.error(error.response?.data?.message || "Error fetching project"); 
+    }
+  }
+
+  const fetchTasks = async () => {
+    try {
+        const token = sessionStorage.getItem("authToken");
+        if (!token) return;
+
+        const res = await axios.get(
+            `http://localhost:5000/api/projects/tasks/${id}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        setTasks(res.data.tasks || []);
+    } catch (error) {
+        toast.error(error.response?.data?.message || "Error fetching tasks");
+    }    
+  }
+
+  useEffect(() => {
+    fetchProjectDetails();
+    fetchTasks();
+  }, [id]);
+
   return (
     <div className='flex-1 flex justify-center'>
 
@@ -13,8 +69,8 @@ const ProjectDetails = () => {
             <div className="">
                 <p className='text-sm font-medium text-gray-500'>Projects</p>
                 <div className="flex items-center gap-5">
-                    <h2 className='text-lg font-semibold'>FarmSmart AI</h2>
-                    <p className='text-xs text-green-600 bg-green-100 px-4 py-0.5 rounded-3xl'>Done</p>
+                    <h2 className='text-lg font-semibold'>{project.name}</h2>
+                    <p className='text-xs text-green-600 bg-green-100 px-4 py-0.5 rounded-3xl capitalize'>{project.status}</p>
                 </div>
             </div>
 
@@ -28,7 +84,7 @@ const ProjectDetails = () => {
                         <div className="h-28 flex flex-col justify-between bg-white px-4 py-2 rounded-sm shadow">
                             
                             <div className="flex justify-between items-center">
-                                <h2 className='w-4/5 text-sm font-medium truncate'>Responsive Design</h2>
+                                <h2 className='w-4/5 text-sm font-medium truncate'>{tasks[0]?.title}</h2>
                                 <div className="p-1 rounded-full hover:bg-gray-500/10 cursor-pointer">
                                     <img 
                                       className='w-4'
@@ -40,7 +96,7 @@ const ProjectDetails = () => {
 
                             <div className="flex items-center gap-2 mb-4">
                                 <img className="w-4" src={deadline} alt="" />
-                                <p className='text-red-600 text-xs'>21 Aug 2025</p>
+                                <p className='text-red-600 text-xs'>{tasks[0]?.dueDate}</p>
                             </div>
 
                             <div className="flex justify-between items-center">

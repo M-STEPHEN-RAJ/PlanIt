@@ -15,16 +15,14 @@ export const SignUp = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const user = await User.create({ name, email, password: hashedPassword });
+        const user = await User.create({ 
+            name, 
+            email, 
+            password: hashedPassword,
+            avatar: "https://res.cloudinary.com/dt4ldt3x6/image/upload/v1756280549/default-profile_ewwgzp.png"
+        });
 
         const token = generateToken(user._id);
-
-        res.cookie("authToken", token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 24 * 60 * 60 * 1000,
-        });
 
         res.status(201).json({
             _id: user._id,
@@ -55,13 +53,6 @@ export const Login = async (req, res) => {
         }
 
         const token = generateToken(user._id);
-
-        res.cookie("authToken", token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 24 * 60 * 60 * 1000,
-        });
 
         res.status(200).json({
             _id: user._id,

@@ -1,10 +1,43 @@
-import React from 'react'
-import add from '../assets/add-icon.png'
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
+import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom'
+import add from '../assets/add-icon.png'
+import Progressbar from '../Components/Progressbar';
 
 const Projects = () => {
 
   const navigate = useNavigate();
+
+  const [projects, setProjects] = useState([]);
+
+  const fetchProjects = async () => {
+    try {
+
+        const token = sessionStorage.getItem("authToken");
+
+        if (!token) {
+            toast.error("You must be logged in!");
+            navigate("/login");
+            return;
+        }
+
+        const res = await axios.get('http://localhost:5000/api/projects', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+
+        setProjects(res.data.projects || []);
+    }
+    catch (error) {
+        toast.error(error.response?.data?.message || "Error fetching projects");
+    }
+  }
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
 
   return (
     <div className="flex-1 flex justify-center">
@@ -15,88 +48,57 @@ const Projects = () => {
 
             <div className="grid grid-cols-4 gap-3">
 
-                <div 
-                  onClick={() => navigate('/projects/farm-smart')}
-                  className="flex justify-between rounded border border-gray-300 px-4 py-2 cursor-pointer"
-                >
+                {projects.map((project) => (
+                    <div 
+                      key={project._id}
+                      onClick={() => navigate(`/projects/${project._id}`)}
+                      className="flex justify-between rounded border border-gray-300 px-4 py-2 cursor-pointer"
+                    >
 
-                    <div className="flex flex-col justify-between">
-                        <div className="flex flex-col">
-                            <h2 className='font-medium'>FarmSmart AI</h2>
-                            <p className='text-xs text-gray-500'>2 days ago</p>
+                        <div className="flex flex-col justify-between">
+                            <div className="flex flex-col">
+                                <h2 className='font-medium'>{project.name}</h2>
+                                <p className='text-xs text-gray-500'>{project.createdAt}</p>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                <div className="flex -space-x-2">
+                                    <img
+                                    className="w-8 h-8 rounded-full border-2 border-white"
+                                    src="https://randomuser.me/api/portraits/men/32.jpg"
+                                    alt=""
+                                    />
+                                    <img
+                                    className="w-8 h-8 rounded-full border-2 border-white"
+                                    src="https://randomuser.me/api/portraits/women/44.jpg"
+                                    alt=""
+                                    />
+                                    <img
+                                    className="w-8 h-8 rounded-full border-2 border-white"
+                                    src="https://randomuser.me/api/portraits/men/46.jpg"
+                                    alt=""
+                                    />
+                                </div>
+
+                                <p className='text-sm font-medium text-gray-500'>
+                                  +5
+                                </p>
+                            </div>
                         </div>
 
-                        <div className="flex -space-x-2">
-                                <img
-                                className="w-8 h-8 rounded-full border-2 border-white"
-                                src="https://randomuser.me/api/portraits/men/32.jpg"
-                                alt=""
-                                />
-                                <img
-                                className="w-8 h-8 rounded-full border-2 border-white"
-                                src="https://randomuser.me/api/portraits/women/44.jpg"
-                                alt=""
-                                />
-                                <img
-                                className="w-8 h-8 rounded-full border-2 border-white"
-                                src="https://randomuser.me/api/portraits/men/46.jpg"
-                                alt=""
-                                />
-                        </div>
-                    </div>
+                        <div className="flex flex-col justify-start gap-5">
 
-                    <div className="flex flex-col justify-start gap-5">
+                            <div className="flex items-center gap-2 mt-1">
+                                <span className='w-1.5 h-1.5 bg-green-500 rounded-full'></span>
+                                <p className='text-xs text-green-500 capitalize'>{project.status}</p>
+                            </div>
 
-                        <div className="flex items-center gap-2 mt-1">
-                            <span className='w-1.5 h-1.5 bg-green-500 rounded-full'></span>
-                            <p className='text-xs text-green-500'>Assigned</p>
-                        </div>
+                            <Progressbar />
 
-                        <div className="flex flex-col justify-center items-center gap-1">
-                            <svg width="50px" height="50px" viewBox="0 0 100 100">
-                                {/* Background circle */}
-                                <circle
-                                    cx="50"
-                                    cy="50"
-                                    r="45"
-                                    fill="none"
-                                    stroke="#e5e7eb"
-                                    strokeWidth="8"
-                                />
-                                
-                                {/* Progress circle */}
-                                <circle
-                                    cx="50"
-                                    cy="50"
-                                    r="45"
-                                    fill="none"
-                                    stroke="#3b82f6"
-                                    strokeWidth="8"
-                                    strokeDasharray="282.6"
-                                    strokeDashoffset="280.6"
-                                    strokeLinecap="round"
-                                    transform="rotate(-90 50 50)"
-                                />
-                                
-                                {/* Value text */}
-                                <text
-                                    x="50%"
-                                    y="50%"
-                                    dominantBaseline="middle"
-                                    textAnchor="middle"
-                                    fontSize="20"
-                                    className="font-semibold fill-gray-700"
-                                >
-                                    0%
-                                </text>
-                            </svg>
-
-                            <p className='text-[10px] text-gray-500'>Completed</p>
                         </div>
 
                     </div>
-
-                </div>
+                ))}
 
                 <div className="h-32 flex justify-center items-center gap-3 rounded border border-gray-300 border-dashed cursor-pointer">
                     <img

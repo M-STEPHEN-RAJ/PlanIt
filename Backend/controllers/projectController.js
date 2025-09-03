@@ -1,35 +1,64 @@
-import Project from '../models/Project.js';
+import Project from "../models/Project.js";
 
-// add projects
 export const createProject = async (req, res) => {
     try {
-        const { title, status, members } = req.body;
+        const { name, status, members } = req.body;
 
-        const project = new Project({
-            title,
+        const project = await Project.create({
+            createdBy: req.user._id,
+            name,
             status,
             members
         })
 
-        await project.save();
-
-        res.status(200).json(project);
-    }
+        res.status(201).json({
+            success: true,
+            message: "Project created successfully",
+            project,
+        })
+    } 
     catch (error) {
-        return res.status(500).json({ message: "Failed to create project!", error: error.message })
+        res.status(500).json({ success: false, message: error.message });
     }
 }
 
-// get projects
-export const getProjects = async (req, res) => {
+export const getUserProjects = async (req, res) => {
     try {
-        const projects = await Project.find()
-          .populate("members", "name email")
-          .sort({ createdAt: -1 });
+        const userId = req.user._id;
 
-        res.status(200).json(projects);
+        const projects = await Project.find({
+            $or: [
+                { createdBy: userId },
+                { members: userId },
+            ],
+            })
+            .populate("members", "name email")
+            .populate("createdBy", "name email");
+
+            res.status(200).json({
+            success: true,
+            count: projects.length,
+            projects,
+        });
+    } 
+    catch (error) {
+        res.status(500).json({ success: false, message: error.message });
     }
-    catch (error) { 
-        return res.status(500).json({ message: "Failed to fetch projects!", error: error.message })
+}
+
+export const getProjectById = async (req, res) => {
+    try {
+        const project = await Project.findById(req.params.id)
+            .populate("createdBy", "name email")
+            .populate("members", "name email");
+
+            if (!project) {
+                return res.status(404).json({ success: false, message: "Project not found" });
+            }
+
+            res.status(200).json({ success: true, project });       
+    } 
+    catch (error) {
+        
     }
 }

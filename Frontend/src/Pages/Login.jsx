@@ -29,6 +29,10 @@ const Login = () => {
             password: formData.password
         })
 
+        if(res.data.token) {
+          sessionStorage.setItem("authToken", res.data.token);
+        }
+
         toast.success(res.data.message || "Logged in successfully!");
         navigate('/dashboard');
     } 
