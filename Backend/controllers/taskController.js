@@ -35,8 +35,8 @@ export const getTasksByProjectId = async (req, res) => {
         const { projectId } = req.params;
 
         const tasks = await Task.find({ projectId })
-            .populate("assignees", "name email")
-            .populate("createdBy", "name email")
+            .populate("assignees", "avatar name email")
+            .populate("createdBy", "avatar name email")
             .sort({ createdAt: -1 });
 
         res.status(200).json({
@@ -47,5 +47,32 @@ export const getTasksByProjectId = async (req, res) => {
     }
     catch (error) {
         res.status(500).json({ success: false, message: error.message });        
+    }
+}
+
+export const deleteTask = async (req, res) => {
+    try {
+        const {taskId} = req.body;
+
+        if (!taskId) {
+            return res.status(400).json({ success: false, message: "No Tasks found!" });
+        }
+
+        const task = await Task.findById(taskId);
+
+        if (!task) {
+            return res.status(404).json({ success: false, message: "No Tasks found!" });
+        }
+
+        if (task.createdBy.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ success: false, message: "Only Project Manager can Delete tasks!" });
+        }
+
+        await task.deleteOne();
+
+        res.status(200).json({ success: true, message: "Task deleted successfully!" });
+    }
+    catch (error) {
+        res.status(500).json({ success: false, message: error.message });
     }
 }

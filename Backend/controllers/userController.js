@@ -28,6 +28,7 @@ export const SignUp = async (req, res) => {
             _id: user._id,
             name: user.name,
             email: user.email,
+            avatar: user.avatar,
             token,
             message: "User signed up successfully!"
         })
@@ -58,6 +59,7 @@ export const Login = async (req, res) => {
             _id: user._id,
             name: user.name,
             email: user.email,
+            avatar: user.avatar,
             token,
             message: "User logged in successfully!"
         })

@@ -35,7 +35,7 @@ const App = () => {
     <div className={`${hideLayout ? '' : 'flex mt-14'}`}>
 
       {!hideLayout && (
-        <div className="fixed top-14 left-0">
+        <div className="fixed top-14 left-0 z-50">
           <Sidebar />
         </div>
       )}

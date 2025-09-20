@@ -5,7 +5,7 @@ export const getAllUsers = async (req, res) => {
     try {
         const selfId = req.user._id;
 
-        const users = await User.find({ _id: { $ne: selfId } }).select("name email");
+        const users = await User.find({ _id: { $ne: selfId } }).select("name email avatar");
 
         res.json({ users });        
     } 
