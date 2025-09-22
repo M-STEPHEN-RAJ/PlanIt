@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import close from "../../assets/close-icon.png";
+import dropdown from '../../assets/dropdown-icon.png'
 
 const TaskModal = ({ status, onCreate, onClose }) => {
   const { id: projectId } = useParams();
@@ -15,7 +16,10 @@ const TaskModal = ({ status, onCreate, onClose }) => {
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
+  const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
+
   const dropdownRef = useRef();
+  const priorityRef = useRef();
 
   useEffect(() => {
     fetchMembers();
@@ -82,6 +86,9 @@ const TaskModal = ({ status, onCreate, onClose }) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setShowDropdown(false);
       }
+      if (priorityRef.current && !priorityRef.current.contains(e.target)) {
+        setShowPriorityDropdown(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -135,61 +142,94 @@ const TaskModal = ({ status, onCreate, onClose }) => {
               />
             </div>
 
-            <div className="w-1/2 flex flex-col gap-1.5">
+            <div ref={priorityRef} className="relative w-1/2 flex flex-col gap-1.5">
               <label className="text-sm">Priority</label>
-              <select
-                value={priority}
-                onChange={(e) => setPriority(e.target.value)}
-                className="border border-gray-300 rounded-md px-2 py-1 outline-none"
+              <div
+                className="border border-gray-300 rounded-md px-2 py-1.5 outline-none cursor-pointer flex justify-between items-center"
+                onClick={() => setShowPriorityDropdown(!showPriorityDropdown)}
               >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
+                <span className="text-sm capitalize">{priority}</span>
+                <img src={dropdown} className={`w-3 transition-all duration-300 ${showPriorityDropdown ? 'rotate-180' : ''}`} alt="" />
+              </div>
+
+              {/* Dropdown list */}
+              {showPriorityDropdown && (
+                <div className="absolute top-full mt-1 w-full bg-white border border-gray-300 rounded-md z-50">
+                  {["low", "medium", "high"].map((level) => (
+                    <div
+                      key={level}
+                      onClick={() => {
+                        setPriority(level);
+                        setShowPriorityDropdown(false);
+                      }}
+                      className={`px-3 py-1.5 cursor-pointer hover:bg-gray-100 capitalize text-sm ${
+                        priority === level ? "bg-gray-200 font-medium" : ""
+                      }`}
+                    >
+                      {level}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="flex flex-col gap-1.5 relative" ref={dropdownRef}>
+          <div ref={dropdownRef} className="relative flex flex-col gap-1.5">
             <label className="text-sm">Members</label>
 
-            {/* Selected members as chips */}
-            <div className="flex flex-wrap gap-2 border border-gray-300 rounded-md px-2 py-1 min-h-[38px]">
-              {selectedMembers.map((m) => (
-                <div
-                  key={m._id}
-                  className="flex items-center gap-1 bg-gray-200 px-2 py-0.5 rounded-md text-sm"
-                >
-                  {m.name}
-                  <button
-                    onClick={() => removeMember(m._id)}
-                    className="text-red-500 font-bold"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-
-              <input
-                type="text"
-                className="flex-1 outline-none text-sm"
-                placeholder="Select members..."
-                onFocus={() => setShowDropdown(true)}
-              />
-            </div>
-
-            {/* Dropdown */}
-            {showDropdown && allMembers.length > 0 && (
-              <div className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-40 overflow-y-auto z-50">
-                {allMembers.map((member) => (
+            {selectedMembers.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-1">
+                {selectedMembers.map((member) => (
                   <div
                     key={member._id}
-                    onClick={() => addMember(member)}
-                    className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+                    className="flex items-center gap-2 bg-gray-100 pl-1.5 pr-3 py-1 rounded-full"
                   >
-                    {member.name}{" "}
-                    <span className="text-gray-500">({member.email})</span>
+                    <img
+                      src={member.avatar}
+                      alt={member.name}
+                      className="w-7 h-7 rounded-full"
+                    />
+                    <span className="text-sm font-medium">{member.name}</span>
+                    <div
+                      className="w-5 h-5 flex justify-center items-center text-lg cursor-pointer hover:text-red-500 hover:bg-red-100 rounded-full"
+                      onClick={() => removeMember(member._id)}
+                    >
+                      &times;
+                    </div>
                   </div>
                 ))}
+              </div>
+            )}
+
+            <div
+              className="border border-gray-300 rounded-md px-2 py-1.5 outline-none cursor-pointer"
+              onClick={() => setShowDropdown(!showDropdown)}
+            >
+              <span className="text-gray-400">Select members</span>
+            </div>
+
+            {showDropdown && (
+              <div className="w-full bg-white absolute top-full mt-1 rounded-md border border-gray-300 z-50 max-h-60 overflow-y-auto">
+                {allMembers.length > 0 ? (
+                  allMembers.map((member) => (
+                    <div
+                      key={member._id}
+                      className="flex items-center gap-3 hover:bg-gray-200 cursor-pointer px-2 py-1.5"
+                      onClick={() => addMember(member)}
+                    >
+                      <img
+                        src={member.avatar}
+                        alt={member.name}
+                        className="w-8 h-8 rounded-full"
+                      />
+                      <p className="font-medium">{member.name}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-center py-2 text-gray-500">
+                    No members found
+                  </p>
+                )}
               </div>
             )}
           </div>

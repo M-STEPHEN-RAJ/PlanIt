@@ -32,8 +32,8 @@ export const getUserProjects = async (req, res) => {
                 { members: userId },
             ],
             })
-            .populate("members", "name email")
-            .populate("createdBy", "name email");
+            .populate("members", "name email avatar")
+            .populate("createdBy", "name email avatar");
 
             res.status(200).json({
             success: true,
@@ -49,8 +49,8 @@ export const getUserProjects = async (req, res) => {
 export const getProjectById = async (req, res) => {
     try {
         const project = await Project.findById(req.params.id)
-            .populate("createdBy", "name email")
-            .populate("members", "name email");
+            .populate("createdBy", "name email avatar")
+            .populate("members", "name email avatar");
 
             if (!project) {
                 return res.status(404).json({ success: false, message: "Project not found" });

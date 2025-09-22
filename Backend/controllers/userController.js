@@ -68,3 +68,41 @@ export const Login = async (req, res) => {
         return res.status(500).json({ message: "Failed to login", error: error.message })
     }
 }
+
+// get current user
+export const getMe = async (req, res) => {
+  try {
+    res.status(200).json(req.user);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch profile", error: error.message });
+  }
+};
+
+// update avatar
+export const updateAvatar = async (req, res) => {
+    try {
+
+        if(!req.file || !req.file.path) {
+            return res.status(400).json({ message: "No file uploaded!" });
+        }
+
+        const user = await User.findByIdAndUpdate(
+            req.user._id,
+            { avatar: req.file.path },
+            { new: true }
+        )
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found!" });
+        }
+
+        res.json({
+            message: "Avatar updated successfully!",
+            avatar: user.avatar,
+        });
+        
+    } 
+    catch (error) {
+        res.status(500).json({ message: "Failed to update Avatar!", error: error.message });        
+    }
+}

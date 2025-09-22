@@ -10,6 +10,7 @@ import medium_priority from "../assets/medium-priority.png";
 import low_priority from "../assets/low-priority.png";
 import convertTime from "../utils/convertTime";
 import TaskModal from "../Components/Modals/TaskModal";
+import search from "../assets/search-icon.png";
 
 const ProjectDetails = () => {
   const navigate = useNavigate();
@@ -21,6 +22,8 @@ const ProjectDetails = () => {
   const [openMenu, setOpenMenu] = useState(null);
   const [project, setProject] = useState({});
   const [tasks, setTasks] = useState([]);
+
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchProjectDetails = async () => {
     try {
@@ -62,33 +65,27 @@ const ProjectDetails = () => {
 
   const handleDeleteTask = async (taskId) => {
     try {
-
       const token = sessionStorage.getItem("authToken");
 
-      if(!token) {
+      if (!token) {
         toast.error("You must be logged in!");
         navigate("/login");
         return;
       }
 
-      await axios.delete(`http://localhost:5000/api/projects/tasks`, {
+      await axios.delete(`http://localhost:5000/api/projects/tasks/${taskId}`, {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        data: {
-          taskId
-        }
-      })
+      });
 
       toast.success("Task deleted successfully!");
 
       setTasks((prevTasks) => prevTasks.filter((t) => t._id !== taskId));
-      
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete task!");
     }
-    catch (error) {
-      toast.error(error.response?.data?.message || "Failed to delete task!");      
-    }
-  }
+  };
 
   useEffect(() => {
     fetchProjectDetails();
@@ -97,7 +94,10 @@ const ProjectDetails = () => {
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (!e.target.closest(".dropdown-toggle") && !e.target.closest(".dropdown-menu")) {
+      if (
+        !e.target.closest(".dropdown-toggle") &&
+        !e.target.closest(".dropdown-menu")
+      ) {
         setOpenMenu(null);
       }
     };
@@ -121,13 +121,31 @@ const ProjectDetails = () => {
           </div>
         </div>
 
+        <div className="">
+          <div className="flex items-center gap-2 w-[250px] px-2 py-1 border border-gray-300 rounded-full">
+            <img className="w-4.5" src={search} alt="" />
+            <input
+              className="w-full text-sm pr-1 outline-none"
+              type="text"
+              placeholder="Search tasks"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+        </div>
+
         <div className="grid grid-cols-4 gap-3">
           <div className="flex flex-col p-2 bg-gray-500/5 rounded-sm">
             <h2 className="text-sm text-gray-500 font-medium p-2">ASSIGNED</h2>
 
             <div className="min-h-20 h-full flex flex-col gap-2 mt-2">
-              {tasks.map((task) =>
-                task.status === "assigned" ? (
+              {tasks
+                .filter(
+                  (task) =>
+                    task.status === "assigned" &&
+                    task.title.toLowerCase().includes(searchQuery.toLowerCase())
+                )
+                .map((task) => (
                   <div
                     key={task._id}
                     className="h-28 flex flex-col justify-between bg-white px-4 py-2 rounded-sm shadow"
@@ -198,8 +216,7 @@ const ProjectDetails = () => {
                       </div>
                     </div>
                   </div>
-                ) : null
-              )}
+                ))}
 
               <div
                 className="flex items-center gap-2 px-2 py-2 rounded hover:bg-gray-500/10 cursor-pointer"
@@ -220,8 +237,13 @@ const ProjectDetails = () => {
             </h2>
 
             <div className="min-h-20 h-full flex flex-col gap-2 mt-2">
-              {tasks.map((task) =>
-                task.status === "progress" ? (
+              {tasks
+                .filter(
+                  (task) =>
+                    task.status === "progress" &&
+                    task.title.toLowerCase().includes(searchQuery.toLowerCase())
+                )
+                .map((task) => (
                   <div
                     key={task._id}
                     className="h-28 flex flex-col justify-between bg-white px-4 py-2 rounded-sm shadow"
@@ -292,8 +314,7 @@ const ProjectDetails = () => {
                       </div>
                     </div>
                   </div>
-                ) : null
-              )}
+                ))}
               <div
                 className="flex items-center gap-2 px-2 py-2 rounded hover:bg-gray-500/10 cursor-pointer"
                 onClick={() => {
@@ -311,8 +332,13 @@ const ProjectDetails = () => {
             <h2 className="text-sm text-gray-500 font-medium p-2">IN REVIEW</h2>
 
             <div className="min-h-20 h-full flex flex-col gap-2 mt-2">
-              {tasks.map((task) =>
-                task.status === "review" ? (
+              {tasks
+                .filter(
+                  (task) =>
+                    task.status === "review" &&
+                    task.title.toLowerCase().includes(searchQuery.toLowerCase())
+                )
+                .map((task) => (
                   <div
                     key={task._id}
                     className="h-28 flex flex-col justify-between bg-white px-4 py-2 rounded-sm shadow"
@@ -383,8 +409,7 @@ const ProjectDetails = () => {
                       </div>
                     </div>
                   </div>
-                ) : null
-              )}
+                ))}
               <div
                 className="flex items-center gap-2 px-2 py-2 rounded hover:bg-gray-500/10 cursor-pointer"
                 onClick={() => {
@@ -402,8 +427,13 @@ const ProjectDetails = () => {
             <h2 className="text-sm text-gray-500 font-medium p-2">DONE</h2>
 
             <div className="min-h-20 h-full flex flex-col gap-2 mt-2">
-              {tasks.map((task) =>
-                task.status === "done" ? (
+              {tasks
+                .filter(
+                  (task) =>
+                    task.status === "done" &&
+                    task.title.toLowerCase().includes(searchQuery.toLowerCase())
+                )
+                .map((task) => (
                   <div
                     key={task._id}
                     className="h-28 flex flex-col justify-between bg-white px-4 py-2 rounded-sm shadow"
@@ -474,8 +504,7 @@ const ProjectDetails = () => {
                       </div>
                     </div>
                   </div>
-                ) : null
-              )}
+                ))}
               <div
                 className="flex items-center gap-2 px-2 py-2 rounded hover:bg-gray-500/10 cursor-pointer"
                 onClick={() => {

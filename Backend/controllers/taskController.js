@@ -52,7 +52,7 @@ export const getTasksByProjectId = async (req, res) => {
 
 export const deleteTask = async (req, res) => {
     try {
-        const {taskId} = req.body;
+        const {taskId} = req.params;
 
         if (!taskId) {
             return res.status(400).json({ success: false, message: "No Tasks found!" });
