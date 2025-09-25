@@ -52,7 +52,11 @@ const Projects = () => {
   return (
     <div className="flex-1 flex justify-center">
       <div className="w-full max-w-[1200px] flex flex-col gap-5 p-3">
-        <h2 className="text-lg font-semibold">Projects</h2>
+        {loading ? 
+          <div className="h-4 w-16 bg-gray-300 rounded mt-3"></div>
+          :
+          <h2 className="text-lg font-semibold">Projects</h2>
+        }
 
         <div className="grid grid-cols-4 gap-3">
           {loading
@@ -124,7 +128,9 @@ const Projects = () => {
                       </p>
                     </div>
 
-                    <Progressbar />
+                    <Progressbar 
+                      progress={project.progress}
+                    />
                   </div>
                 </div>
               ))}
