@@ -11,6 +11,7 @@ import camera from "../assets/camera-icon.png";
 import { useSidebar } from "../Context/SidebarContext";
 import { useNavigate } from "react-router-dom";
 import AvatarModal from "./Modals/AvatarModal";
+import LogoutModal from "./Modals/LogoutModal";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -20,6 +21,8 @@ const Navbar = () => {
   const [showProfile, setShowProfile] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [user, setUser] = useState(null);
+
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const profileRef = useRef();
 
@@ -43,6 +46,12 @@ const Navbar = () => {
       console.error("Failed to fetch user profile:", error);
     }
   };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('authToken')
+    navigate('/login')
+    toast.success("logged out successfully!");
+  }  
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -128,7 +137,10 @@ const Navbar = () => {
                 <button className="w-[110px] text-sm text-white bg-black py-1 rounded-full cursor-pointer">
                   Profile
                 </button>
-                <button className="w-[110px] text-sm font-medium border py-1 rounded-full cursor-pointer">
+                <button 
+                  onClick={() => setShowLogoutModal(true)}
+                  className="w-[110px] text-sm font-medium border py-1 rounded-full cursor-pointer"
+                >
                   Logout
                 </button>
               </div>
@@ -157,6 +169,13 @@ const Navbar = () => {
           }}
         />
       }
+
+      {showLogoutModal && (
+        <LogoutModal
+          onConfirm={handleLogout}
+          onCancel={() => setShowLogoutModal(false)}
+        />
+      )}
 
     </>
   );

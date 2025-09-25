@@ -3,9 +3,15 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import close from "../../assets/close-icon.png";
-import dropdown from '../../assets/dropdown-icon.png'
+import dropdown from "../../assets/dropdown-icon.png";
 
-const TaskModal = ({ status, onCreate, onClose }) => {
+const TaskModal = ({
+  status,
+  onCreate,
+  onClose,
+  mode = "create",
+  task = null,
+}) => {
   const { id: projectId } = useParams();
 
   const [title, setTitle] = useState("");
@@ -65,7 +71,7 @@ const TaskModal = ({ status, onCreate, onClose }) => {
           title,
           status,
           priority,
-          dueDate,
+          dueDate: new Date(dueDate).toISOString(),
           assignees: selectedMembers.map((m) => m._id),
         },
         {
@@ -81,6 +87,44 @@ const TaskModal = ({ status, onCreate, onClose }) => {
     }
   };
 
+  const handleEditTask = async () => {
+    try {
+      const token = sessionStorage.getItem("authToken");
+      if (!token) {
+        toast.error("You must be logged in!");
+        return;
+      }
+
+      if (!title || !dueDate) {
+        toast.error("Please fill in all fields");
+        return;
+      }
+
+      if (!task || !task._id) {
+        toast.error("Invalid task selected!");
+        return;
+      }
+
+      const res = await axios.put(
+        `http://localhost:5000/api/projects/tasks/${task._id}`,
+        {
+          title,
+          status,
+          priority,
+          dueDate: new Date(dueDate).toISOString(),
+          assignees: selectedMembers.map((m) => m._id),
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      toast.success("Task updated successfully!");
+      onCreate(res.data.task);
+      onClose();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to update task!");
+    }
+  };
+
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -93,6 +137,20 @@ const TaskModal = ({ status, onCreate, onClose }) => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (mode === "edit" && task) {
+      setTitle(task.title || "");
+      setDueDate(task.dueDate ? task.dueDate.split("T")[0] : "");
+      setPriority(task.priority || "medium");
+      setSelectedMembers(task.assignees || []);
+    } else {
+      setTitle("");
+      setDueDate("");
+      setPriority("medium");
+      setSelectedMembers([]);
+    }
+  }, [mode, task]);
 
   const addMember = (member) => {
     if (!selectedMembers.find((m) => m._id === member._id)) {
@@ -111,7 +169,9 @@ const TaskModal = ({ status, onCreate, onClose }) => {
     <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-[9999]">
       <div className="bg-white space-y-5 p-6 rounded-lg w-full max-w-[500px] relative">
         <div className="flex justify-between items-center">
-          <h2 className="text-lg font-semibold">Create Tasks</h2>
+          <h2 className="text-lg font-semibold">
+            {mode === "create" ? "Create Task" : "Edit Task"}
+          </h2>
           <div
             onClick={onClose}
             className="w-fit p-2 hover:bg-gray-500/10 rounded-full cursor-pointer"
@@ -142,14 +202,23 @@ const TaskModal = ({ status, onCreate, onClose }) => {
               />
             </div>
 
-            <div ref={priorityRef} className="relative w-1/2 flex flex-col gap-1.5">
+            <div
+              ref={priorityRef}
+              className="relative w-1/2 flex flex-col gap-1.5"
+            >
               <label className="text-sm">Priority</label>
               <div
                 className="border border-gray-300 rounded-md px-2 py-1.5 outline-none cursor-pointer flex justify-between items-center"
                 onClick={() => setShowPriorityDropdown(!showPriorityDropdown)}
               >
                 <span className="text-sm capitalize">{priority}</span>
-                <img src={dropdown} className={`w-3 transition-all duration-300 ${showPriorityDropdown ? 'rotate-180' : ''}`} alt="" />
+                <img
+                  src={dropdown}
+                  className={`w-3 transition-all duration-300 ${
+                    showPriorityDropdown ? "rotate-180" : ""
+                  }`}
+                  alt=""
+                />
               </div>
 
               {/* Dropdown list */}
@@ -243,10 +312,10 @@ const TaskModal = ({ status, onCreate, onClose }) => {
             Cancel
           </button>
           <button
-            onClick={handleCreateTask}
+            onClick={mode === "create" ? handleCreateTask : handleEditTask}
             className="text-white bg-black font-medium w-20 py-1 rounded-md cursor-pointer"
           >
-            Create
+            {mode === "create" ? "Create" : "Save"}
           </button>
         </div>
       </div>

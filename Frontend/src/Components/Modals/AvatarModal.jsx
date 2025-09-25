@@ -5,6 +5,7 @@ import close from "../../assets/close-icon.png";
 import avatarPlaceholder from "../../assets/avatar.png";
 import Cropper from "react-easy-crop";
 import getCroppedImg from "../../utils/cropImage";
+import toast from "react-hot-toast";
 
 const AvatarModal = ({ onClose, profileRef, avatar, onAvatarChange }) => {
   const fileInputRef = useRef(null);
@@ -58,7 +59,7 @@ const AvatarModal = ({ onClose, profileRef, avatar, onAvatarChange }) => {
       setZoom(1);
     } catch (err) {
       console.error("Upload failed:", err);
-      alert("Failed to upload avatar");
+      toast.error("Failed to upload avatar");
     } finally {
       setLoading(false);
     }
@@ -104,7 +105,7 @@ const AvatarModal = ({ onClose, profileRef, avatar, onAvatarChange }) => {
       if (onAvatarChange) onAvatarChange(updatedAvatarUrl);
     } catch (err) {
       console.error("Failed to remove avatar:", err);
-      alert("Failed to remove avatar");
+      toast.error("Failed to remove avatar");
     } finally {
       setLoading(false);
       setImageSrc(null);
@@ -116,7 +117,7 @@ const AvatarModal = ({ onClose, profileRef, avatar, onAvatarChange }) => {
   return (
     <div
       ref={profileRef}
-      className="fixed inset-0 bg-black/20 flex items-center justify-center z-[9999]"
+      className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
     >
       <div className="bg-white p-4 rounded-lg w-full max-w-[350px] relative">
         {/* Header */}

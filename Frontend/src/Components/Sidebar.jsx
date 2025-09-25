@@ -17,7 +17,7 @@ const Sidebar = () => {
   const navigate = useNavigate()
   const { openSidebar, sidebarActive, setSidebarActive } = useSidebar()
 
-  const [showLogoutModal, setShowLogoutModal] = useState(false)
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const sidebarItems = [
     {

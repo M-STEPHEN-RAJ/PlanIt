@@ -98,24 +98,21 @@ const Projects = () => {
 
                     <div className="flex items-center gap-2">
                       <div className="flex -space-x-2">
-                        <img
-                          className="w-8 h-8 rounded-full border-2 border-white"
-                          src="https://randomuser.me/api/portraits/men/32.jpg"
-                          alt=""
-                        />
-                        <img
-                          className="w-8 h-8 rounded-full border-2 border-white"
-                          src="https://randomuser.me/api/portraits/women/44.jpg"
-                          alt=""
-                        />
-                        <img
-                          className="w-8 h-8 rounded-full border-2 border-white"
-                          src="https://randomuser.me/api/portraits/men/46.jpg"
-                          alt=""
-                        />
+                        {project.members.slice(0, 3).map((member) => (
+                          <img
+                            key={member._id}
+                            className="w-8 h-8 object-cover rounded-full border-2 border-white"
+                            src={member.avatar}
+                            title={member.name}
+                          />
+                        ))}
                       </div>
 
-                      <p className="text-sm font-medium text-gray-500">+5</p>
+                      {project.members.length > 3 && (
+                        <p className="text-sm font-medium text-gray-500">
+                          +{project.members.length - 3}
+                        </p>
+                      )}
                     </div>
                   </div>
 
