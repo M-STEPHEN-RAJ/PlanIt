@@ -7,6 +7,7 @@ import userRoutes from './routes/userRoutes.js'
 import projectRoutes from './routes/projectRoutes.js'
 import taskRoutes from './routes/taskRoutes.js'
 import memberRoutes from './routes/memberRoutes.js'
+import eventRoutes from './routes/eventRoutes.js'
 
 dotenv.config();
 
@@ -16,7 +17,11 @@ connectDB();
 
 app.use(express.json());
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: [
+        'http://localhost:5173',
+        "https://planit-25.web.app",
+        "http://planit-25.web.app"
+    ],
     credentials: true
 }));
 app.use(cookieParser());
@@ -30,6 +35,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/projects', taskRoutes);
 app.use('/api/members', memberRoutes);
+app.use("/api/events", eventRoutes);
 
 const PORT = process.env.PORT;
 
