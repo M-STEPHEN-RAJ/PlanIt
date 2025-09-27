@@ -1,11 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import close from "../../assets/close-icon.png";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
-const CalendarModal = ({ isOpen, onClose, onSave, selectedDate }) => {
+const CalendarModal = ({
+  isOpen,
+  onClose,
+  onSave,
+  selectedDate,
+  eventToEdit,
+}) => {
   const [title, setTitle] = useState("");
+  const [meetLink, setMeetLink] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (eventToEdit) {
+      setTitle(eventToEdit.title || "");
+      setMeetLink(eventToEdit.extendedProps?.meetLink || "");
+    } else {
+      setTitle("");
+      setMeetLink("");
+    }
+  }, [eventToEdit, isOpen]);
 
   if (!isOpen) return null;
 
@@ -30,20 +47,34 @@ const CalendarModal = ({ isOpen, onClose, onSave, selectedDate }) => {
         "0"
       )}`;
 
-      // POST request to backend
-      const res = await axios.post(
-        "http://localhost:5000/api/events",
-        { title, date: isoDate },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      let res;
+      if (eventToEdit) {
+        // UPDATE event
+        res = await axios.put(
+          `http://localhost:5000/api/events/${eventToEdit.id}`,
+          { title, date: isoDate, meetLink },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        toast.success("Event updated successfully!");
+      } else {
+        // CREATE new event
+        res = await axios.post(
+          "http://localhost:5000/api/events",
+          { title, date: isoDate, meetLink },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        toast.success("Event added successfully!");
+      }
 
-      onSave(res.data); // Pass the newly created event to parent
+      onSave(res.data);
       setTitle("");
+      setMeetLink("");
       onClose();
-      toast.success("Event added successfully!");
     } catch (err) {
       console.error(err);
-      toast.error("Failed to add event");
+      toast.error(
+        eventToEdit ? "Failed to update event" : "Failed to add event"
+      );
     } finally {
       setLoading(false);
     }
@@ -51,9 +82,11 @@ const CalendarModal = ({ isOpen, onClose, onSave, selectedDate }) => {
 
   return (
     <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
-      <div className="bg-white space-y-3 p-6 rounded-lg w-full max-w-[400px] relative shadow-lg">
+      <div className="bg-white space-y-3 p-6 rounded-lg w-full max-w-[450px] relative shadow-lg">
         <div className="flex justify-between items-center">
-          <h2 className="text-lg font-semibold">Add Event</h2>
+          <h2 className="text-lg font-semibold">
+            {eventToEdit ? "Edit Event" : "Add Event"}
+          </h2>
           <div
             onClick={onClose}
             className="w-fit p-2 hover:bg-gray-500/10 rounded-full cursor-pointer"
@@ -67,18 +100,33 @@ const CalendarModal = ({ isOpen, onClose, onSave, selectedDate }) => {
             <span className="text-base text-gray-700 font-medium">
               Date:&nbsp;
             </span>
-            {selectedDate}
+            {new Date(selectedDate).toLocaleDateString()}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <input
-              type="text"
-              className="w-full border border-gray-300 rounded-md px-2 py-1 outline-none"
-              placeholder="Enter event"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              disabled={loading}
-            />
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm">Event Name</label>
+              <input
+                type="text"
+                className="w-full border border-gray-300 rounded-md px-2 py-1 outline-none"
+                placeholder="Enter event"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                disabled={loading}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm">Meet Link</label>
+              <input
+                type="text"
+                className="w-full border border-gray-300 rounded-md px-2 py-1 outline-none"
+                placeholder="Enter meeting link (optional)"
+                value={meetLink}
+                onChange={(e) => setMeetLink(e.target.value)}
+                disabled={loading}
+              />
+            </div>
 
             <div className="flex justify-end gap-3">
               <button
@@ -91,17 +139,9 @@ const CalendarModal = ({ isOpen, onClose, onSave, selectedDate }) => {
               </button>
               <button
                 type="submit"
-                className={`
-                    w-20 py-1 rounded-md font-medium text-white
-                    bg-black hover:bg-gray-800
-                    flex items-center justify-center
-                    gap-2
-                    ${
-                      loading
-                        ? "opacity-50 cursor-not-allowed"
-                        : "cursor-pointer"
-                    }
-                `}
+                className={`w-20 py-1 rounded-md font-medium text-white bg-black hover:bg-gray-800 flex items-center justify-center gap-2 ${
+                  loading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+                }`}
                 disabled={loading}
               >
                 {loading ? (

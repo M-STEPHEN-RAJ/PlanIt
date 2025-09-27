@@ -101,3 +101,41 @@ export const getProjectById = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 }
+
+// Update project
+export const updateProject = async (req, res) => {
+    try {
+        const projectId = req.params.id;
+        const { name, status, members } = req.body;
+
+        // find project 
+        const project = await Project.findById(projectId);
+        if (!project) {
+            return res.status(404).json({ success: false, message: "Project not found!" });
+        }
+
+        // Only creator can update
+        if (project.createdBy.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ success: false, message: "Only Project Manager can update!" });
+        }
+
+        // Fields update 
+        if (name) project.name = name;
+        if (status) project.status = status;
+        if (members) project.members = members;
+
+        await project.save();
+
+        // Progress recalculation 
+        project.progress = await calculateProjectProgress(project._id);
+
+        res.status(200).json({
+            success: true,
+            message: "Project updated successfully!",
+            project
+        });
+    } 
+    catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};

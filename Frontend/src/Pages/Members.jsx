@@ -46,7 +46,11 @@ const Members = () => {
   return (
     <div className="flex-1 flex justify-center">
       <div className="w-full max-w-[1200px] flex flex-col gap-3 p-3">
-        <h2 className="text-lg font-semibold mb-2">Members</h2>
+        {loading ? (
+          <div className="h-4 w-20 bg-gray-300 rounded-md mt-3 animate-pulse mb-2"></div>
+        ) : (
+          <h2 className="text-lg font-semibold mb-2">Members</h2>
+        )}
 
         {loading
           ? Array.from({ length: 6 }).map((_, i) => (

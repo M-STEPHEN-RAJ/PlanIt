@@ -2,16 +2,18 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
+import edit from "../assets/edit-icon.png";
 import add from "../assets/add-icon.png";
 import more from "../assets/more-icon.png";
 import deadline from "../assets/deadline-icon.png";
 import high_priority from "../assets/high-priority.png";
 import medium_priority from "../assets/medium-priority.png";
 import low_priority from "../assets/low-priority.png";
-import convertTime from "../utils/convertTime";
 import TaskModal from "../Components/Modals/TaskModal";
 import search from "../assets/search-icon.png";
 import filter from "../assets/filter-icon.png";
+import DeleteModal from "../Components/Modals/DeleteModal";
+import ProjectDetailsModal from "../Components/Modals/ProjectDetailsModal";
 
 const ProjectDetails = () => {
   const navigate = useNavigate();
@@ -25,6 +27,8 @@ const ProjectDetails = () => {
   const [modalMode, setModalMode] = useState("create");
   const [selectedStatus, setSelectedStatus] = useState("");
 
+  const [showProjectModal, setShowProjectModal] = useState(false);
+
   const [openMenu, setOpenMenu] = useState(null);
   const [project, setProject] = useState({});
   const [tasks, setTasks] = useState([]);
@@ -33,6 +37,9 @@ const ProjectDetails = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState(null);
 
   const fetchProjectDetails = async () => {
     try {
@@ -78,29 +85,35 @@ const ProjectDetails = () => {
     }
   };
 
-  const handleDeleteTask = async (taskId) => {
-    try {
-      const token = sessionStorage.getItem("authToken");
+  const confirmDeleteTask = async () => {
+  if (!taskToDelete) return;
 
-      if (!token) {
-        toast.error("You must be logged in!");
-        navigate("/login");
-        return;
-      }
-
-      await axios.delete(`http://localhost:5000/api/projects/tasks/${taskId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      toast.success("Task deleted successfully!");
-
-      setTasks((prevTasks) => prevTasks.filter((t) => t._id !== taskId));
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to delete task!");
+  try {
+    const token = sessionStorage.getItem("authToken");
+    if (!token) {
+      toast.error("You must be logged in!");
+      setDeleteModalOpen(false);
+      return;
     }
-  };
+
+    await axios.delete(
+      `http://localhost:5000/api/projects/tasks/${taskToDelete._id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    toast.success("Task deleted successfully!");
+    setTasks((prevTasks) =>
+      prevTasks.filter((t) => t._id !== taskToDelete._id)
+    );
+
+    setDeleteModalOpen(false);
+    setTaskToDelete(null);
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Failed to delete task!");
+  }
+};
 
   useEffect(() => {
     fetchProjectDetails();
@@ -154,10 +167,29 @@ const ProjectDetails = () => {
         ) : (
           <>
             <div className="">
-              <p className="text-sm font-medium text-gray-500">Projects</p>
-              <div className="flex items-center gap-5">
-                <h2 className="text-lg font-semibold">{project.name}</h2>
-                <p className="text-xs text-green-600 bg-green-100 px-4 py-0.5 rounded-3xl capitalize">
+              <p className="text-sm font-medium text-gray-500">Projects</p>                
+              
+              <div className="flex items-center gap-3">
+                <div onClick={() => setShowProjectModal(true)} className="flex items-center gap-1 hover:underline cursor-pointer">
+                  <h2 className="text-lg font-semibold">{project.name}</h2>
+                  <div className="hover:bg-gray-100 p-1.5 rounded-full">
+                    <img src={edit} className="w-4 h-4" alt="" />
+                  </div>
+                </div>
+                <p
+                  className={`text-xs px-4 py-0.5 rounded-3xl font-medium capitalize
+                    ${
+                      project.status === "assigned"
+                        ? "text-blue-600 bg-blue-100"
+                        : project.status === "development"
+                        ? "text-yellow-600 bg-yellow-100"
+                        : project.status === "testing"
+                        ? "text-purple-600 bg-purple-100"
+                        : project.status === "completed"
+                        ? "text-green-600 bg-green-100"
+                        : "text-gray-600 bg-gray-100"
+                    }`}
+                >
                   {project.status}
                 </p>
               </div>
@@ -289,7 +321,11 @@ const ProjectDetails = () => {
                               Edit
                             </button>
                             <button
-                              onClick={() => handleDeleteTask(task._id)}
+                              onClick={() => {
+                                setTaskToDelete(task);
+                                setDeleteModalOpen(true);
+                                setOpenMenu(null);
+                              }}
                               className="w-full text-left px-3 py-1.5 text-xs text-red-600 hover:bg-gray-100 cursor-pointer"
                             >
                               Delete
@@ -398,7 +434,11 @@ const ProjectDetails = () => {
                               Edit
                             </button>
                             <button
-                              onClick={() => handleDeleteTask(task._id)}
+                              onClick={() => {
+                                setTaskToDelete(task);
+                                setDeleteModalOpen(true);
+                                setOpenMenu(null);
+                              }}
                               className="w-full text-left px-3 py-1.5 text-xs text-red-600 hover:bg-gray-100 cursor-pointer"
                             >
                               Delete
@@ -504,7 +544,11 @@ const ProjectDetails = () => {
                               Edit
                             </button>
                             <button
-                              onClick={() => handleDeleteTask(task._id)}
+                              onClick={() => {
+                                setTaskToDelete(task);
+                                setDeleteModalOpen(true);
+                                setOpenMenu(null);
+                              }}
                               className="w-full text-left px-3 py-1.5 text-xs text-red-600 hover:bg-gray-100 cursor-pointer"
                             >
                               Delete
@@ -610,7 +654,11 @@ const ProjectDetails = () => {
                               Edit
                             </button>
                             <button
-                              onClick={() => handleDeleteTask(task._id)}
+                              onClick={() => {
+                                setTaskToDelete(task);
+                                setDeleteModalOpen(true);
+                                setOpenMenu(null);
+                              }}
                               className="w-full text-left px-3 py-1.5 text-xs text-red-600 hover:bg-gray-100 cursor-pointer"
                             >
                               Delete
@@ -680,6 +728,21 @@ const ProjectDetails = () => {
           onCreate={() => fetchTasks()}
         />
       )}
+
+      <DeleteModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        message={`Are you sure you want to delete "${taskToDelete?.title}"?`}
+        onConfirm={confirmDeleteTask}
+      />
+
+      <ProjectDetailsModal 
+        isOpen={showProjectModal}
+        onClose={() => setShowProjectModal(false)}
+        project={project}
+        onUpdate={fetchProjectDetails}
+      />
+
     </div>
   );
 };

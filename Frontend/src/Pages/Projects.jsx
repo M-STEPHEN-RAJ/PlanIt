@@ -52,11 +52,11 @@ const Projects = () => {
   return (
     <div className="flex-1 flex justify-center">
       <div className="w-full max-w-[1200px] flex flex-col gap-5 p-3">
-        {loading ? 
+        {loading ? (
           <div className="h-4 w-16 bg-gray-300 rounded mt-3"></div>
-          :
+        ) : (
           <h2 className="text-lg font-semibold">Projects</h2>
-        }
+        )}
 
         <div className="grid grid-cols-4 gap-3">
           {loading
@@ -122,15 +122,39 @@ const Projects = () => {
 
                   <div className="flex flex-col justify-start gap-5">
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                      <p className="text-xs text-green-500 capitalize">
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full
+                          ${
+                            project.status === "assigned"
+                              ? "bg-blue-500"
+                              : project.status === "development"
+                              ? "bg-yellow-500"
+                              : project.status === "testing"
+                              ? "bg-purple-500"
+                              : project.status === "completed"
+                              ? "bg-green-500"
+                              : "bg-gray-500"
+                          }`}
+                      ></span>
+                      <p
+                        className={`text-xs capitalize
+                          ${
+                            project.status === "assigned"
+                              ? "text-blue-500"
+                              : project.status === "development"
+                              ? "text-yellow-500"
+                              : project.status === "testing"
+                              ? "text-purple-500"
+                              : project.status === "completed"
+                              ? "text-green-500"
+                              : "text-gray-500"
+                          }`}
+                      >
                         {project.status}
                       </p>
                     </div>
 
-                    <Progressbar 
-                      progress={project.progress}
-                    />
+                    <Progressbar progress={project.progress} />
                   </div>
                 </div>
               ))}
