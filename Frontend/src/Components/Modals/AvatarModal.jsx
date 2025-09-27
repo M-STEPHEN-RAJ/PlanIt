@@ -6,6 +6,7 @@ import avatarPlaceholder from "../../assets/avatar.png";
 import Cropper from "react-easy-crop";
 import getCroppedImg from "../../utils/cropImage";
 import toast from "react-hot-toast";
+import { API_BASE_URL } from "../../utils/api";
 
 const AvatarModal = ({ onClose, profileRef, avatar, onAvatarChange }) => {
   const fileInputRef = useRef(null);
@@ -38,7 +39,7 @@ const AvatarModal = ({ onClose, profileRef, avatar, onAvatarChange }) => {
       const token = sessionStorage.getItem("authToken");
 
       const response = await axios.put(
-        "http://localhost:5000/api/users/avatar",
+        `${API_BASE_URL}/api/users/avatar`,
         formData,
         {
           headers: {
@@ -89,7 +90,7 @@ const AvatarModal = ({ onClose, profileRef, avatar, onAvatarChange }) => {
       const token = sessionStorage.getItem("authToken");
 
       const res = await axios.put(
-        "http://localhost:5000/api/users/avatar",
+        `${API_BASE_URL}/api/users/avatar`,
         formData,
         {
           headers: {

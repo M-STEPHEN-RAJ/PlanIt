@@ -139,3 +139,32 @@ export const updateProject = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+// Delete project
+export const deleteProject = async (req, res) => {
+    try {
+        const projectId = req.params.id;
+
+        // Find project
+        const project = await Project.findById(projectId);
+        if (!project) {
+            return res.status(404).json({ success: false, message: "Project not found!" });
+        }
+
+        // Only creator can delete
+        if (project.createdBy.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ success: false, message: "Only Project Manager can delete!" });
+        }
+
+        // Delete project
+        await Project.findByIdAndDelete(projectId);
+
+        // Optionally, delete all tasks associated with this project
+        await Task.deleteMany({ projectId });
+
+        res.status(200).json({ success: true, message: "Project deleted successfully!" });
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};

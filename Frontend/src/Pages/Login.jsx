@@ -3,6 +3,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import logo from '../assets/planit-logo.png'
 import { useNavigate } from 'react-router-dom'
+import { API_BASE_URL } from '../utils/api';
 
 const Login = () => {
 
@@ -24,7 +25,7 @@ const Login = () => {
     }
 
     try {
-        const res = await axios.post('http://localhost:5000/api/users/login', {
+        const res = await axios.post(`${API_BASE_URL}/api/users/login`, {
             email: formData.email,
             password: formData.password
         })

@@ -7,6 +7,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import CalendarModal from "../Components/Modals/CalendarModal";
 import DeleteModal from "../Components/Modals/DeleteModal";
+import { API_BASE_URL } from "../utils/api";
 
 const EventDropdown = ({ event, onEdit, onJoin, onDelete, onClose }) => {
   return (
@@ -62,7 +63,7 @@ const Calendar = () => {
         return;
       }
 
-      const res = await axios.get("http://localhost:5000/api/events", {
+      const res = await axios.get(`${API_BASE_URL}/api/events`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -130,7 +131,7 @@ const Calendar = () => {
       }
 
       await axios.delete(
-        `http://localhost:5000/api/events/${selectedEvent.id}`,
+        `${API_BASE_URL}/api/events/${selectedEvent.id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

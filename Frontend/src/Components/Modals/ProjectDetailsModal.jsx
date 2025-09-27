@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import close from "../../assets/close-icon.png";
 import dropdown from "../../assets/dropdown-icon.png";
+import { API_BASE_URL } from "../../utils/api";
 
 const statusOptions = ["assigned", "development", "testing", "completed"];
 
@@ -32,7 +33,7 @@ const ProjectDetailsModal = ({ isOpen, onClose, project, onUpdate }) => {
       const token = sessionStorage.getItem("authToken");
       if (!token) return;
 
-      const res = await axios.get("http://localhost:5000/api/members", {
+      const res = await axios.get(`${API_BASE_URL}/api/members`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAllUsers(res.data.users || []);
@@ -74,7 +75,7 @@ const ProjectDetailsModal = ({ isOpen, onClose, project, onUpdate }) => {
       }
 
       await axios.patch(
-        `http://localhost:5000/api/projects/${project._id}`,
+        `${API_BASE_URL}/api/projects/${project._id}`,
         { name, status, members: members.map((m) => m._id) },
         { headers: { Authorization: `Bearer ${token}` } }
       );

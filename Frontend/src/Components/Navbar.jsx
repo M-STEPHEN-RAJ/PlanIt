@@ -12,6 +12,7 @@ import { useSidebar } from "../Context/SidebarContext";
 import { useNavigate } from "react-router-dom";
 import AvatarModal from "./Modals/AvatarModal";
 import LogoutModal from "./Modals/LogoutModal";
+import { API_BASE_URL } from "../utils/api";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ const Navbar = () => {
         return;
       }
 
-      const res = await axios.get("http://localhost:5000/api/users/me", {
+      const res = await axios.get(`${API_BASE_URL}/api/users/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

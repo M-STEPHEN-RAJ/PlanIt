@@ -14,6 +14,7 @@ import search from "../assets/search-icon.png";
 import filter from "../assets/filter-icon.png";
 import DeleteModal from "../Components/Modals/DeleteModal";
 import ProjectDetailsModal from "../Components/Modals/ProjectDetailsModal";
+import { API_BASE_URL } from "../utils/api";
 
 const ProjectDetails = () => {
   const navigate = useNavigate();
@@ -27,6 +28,8 @@ const ProjectDetails = () => {
   const [modalMode, setModalMode] = useState("create");
   const [selectedStatus, setSelectedStatus] = useState("");
 
+  const [projectDropdownOpen, setProjectDropdownOpen] = useState(false);
+  const [deleteProjectModalOpen, setDeleteProjectModalOpen] = useState(false);
   const [showProjectModal, setShowProjectModal] = useState(false);
 
   const [openMenu, setOpenMenu] = useState(null);
@@ -52,7 +55,7 @@ const ProjectDetails = () => {
         return;
       }
 
-      const res = await axios.get(`http://localhost:5000/api/projects/${id}`, {
+      const res = await axios.get(`${API_BASE_URL}/api/projects/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -73,7 +76,7 @@ const ProjectDetails = () => {
       if (!token) return;
 
       const res = await axios.get(
-        `http://localhost:5000/api/projects/tasks/${id}`,
+        `${API_BASE_URL}/api/projects/tasks/${id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -85,35 +88,52 @@ const ProjectDetails = () => {
     }
   };
 
-  const confirmDeleteTask = async () => {
-  if (!taskToDelete) return;
+  const confirmDeleteProject = async () => {
+    try {
+      const token = sessionStorage.getItem("authToken");
+      if (!token) return;
 
-  try {
-    const token = sessionStorage.getItem("authToken");
-    if (!token) {
-      toast.error("You must be logged in!");
-      setDeleteModalOpen(false);
-      return;
-    }
-
-    await axios.delete(
-      `http://localhost:5000/api/projects/tasks/${taskToDelete._id}`,
-      {
+      await axios.delete(`${API_BASE_URL}/api/projects/${project._id}`, {
         headers: { Authorization: `Bearer ${token}` },
+      });
+
+      toast.success("Project deleted successfully!");
+      setDeleteProjectModalOpen(false);
+      navigate("/projects"); // Redirect back to projects list
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete project!");
+    }
+  };
+
+  const confirmDeleteTask = async () => {
+    if (!taskToDelete) return;
+
+    try {
+      const token = sessionStorage.getItem("authToken");
+      if (!token) {
+        toast.error("You must be logged in!");
+        setDeleteModalOpen(false);
+        return;
       }
-    );
 
-    toast.success("Task deleted successfully!");
-    setTasks((prevTasks) =>
-      prevTasks.filter((t) => t._id !== taskToDelete._id)
-    );
+      await axios.delete(
+        `${API_BASE_URL}/api/projects/tasks/${taskToDelete._id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
-    setDeleteModalOpen(false);
-    setTaskToDelete(null);
-  } catch (error) {
-    toast.error(error.response?.data?.message || "Failed to delete task!");
-  }
-};
+      toast.success("Task deleted successfully!");
+      setTasks((prevTasks) =>
+        prevTasks.filter((t) => t._id !== taskToDelete._id)
+      );
+
+      setDeleteModalOpen(false);
+      setTaskToDelete(null);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete task!");
+    }
+  };
 
   useEffect(() => {
     fetchProjectDetails();
@@ -143,8 +163,10 @@ const ProjectDetails = () => {
     <div className="flex-1 flex justify-center">
       <div className="w-full max-w-[1200px] flex flex-col gap-5 p-3">
         {loadingProject ? (
-          <div className="">
+          <div className="relative">
             <p className="h-3 w-13 bg-gray-300 rounded-full animate-pulse mt-2"></p>
+
+            <p className="absolute top-1.5 right-3.5 h-6.5 w-6.5 bg-gray-300 rounded-full animate-pulse mt-2"></p>
 
             <div className="flex items-center gap-5 mt-2 mb-5">
               <div className="h-4 w-32 bg-gray-300 rounded animate-pulse"></div>
@@ -166,11 +188,46 @@ const ProjectDetails = () => {
           </div>
         ) : (
           <>
-            <div className="">
-              <p className="text-sm font-medium text-gray-500">Projects</p>                
-              
+            <div className="relative">
+              <div className="absolute top-3 right-3">
+                <div
+                  className="p-1.5 cursor-pointer rounded-full hover:bg-gray-100"
+                  onClick={() => setProjectDropdownOpen((prev) => !prev)}
+                >
+                  <img src={more} className="w-4 rotate-90" alt="More" />
+                </div>
+
+                {projectDropdownOpen && (
+                  <div className="absolute right-0 mt-1 w-32 bg-white border border-gray-300 rounded z-10">
+                    <button
+                      onClick={() => {
+                        setShowProjectModal(true);
+                        setProjectDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-xs hover:bg-gray-100 cursor-pointer"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => {
+                        setDeleteProjectModalOpen(true);
+                        setProjectDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-xs text-red-600 hover:bg-gray-100 cursor-pointer"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <p className="text-sm font-medium text-gray-500">Projects</p>
+
               <div className="flex items-center gap-3">
-                <div onClick={() => setShowProjectModal(true)} className="flex items-center gap-1 hover:underline cursor-pointer">
+                <div
+                  onClick={() => setShowProjectModal(true)}
+                  className="flex items-center gap-1 hover:underline cursor-pointer"
+                >
                   <h2 className="text-lg font-semibold">{project.name}</h2>
                   <div className="hover:bg-gray-100 p-1.5 rounded-full">
                     <img src={edit} className="w-4 h-4" alt="" />
@@ -736,13 +793,19 @@ const ProjectDetails = () => {
         onConfirm={confirmDeleteTask}
       />
 
-      <ProjectDetailsModal 
+      <DeleteModal
+        isOpen={deleteProjectModalOpen}
+        onClose={() => setDeleteProjectModalOpen(false)}
+        message={`Are you sure you want to delete the project "${project.name}"?`}
+        onConfirm={confirmDeleteProject}
+      />
+
+      <ProjectDetailsModal
         isOpen={showProjectModal}
         onClose={() => setShowProjectModal(false)}
         project={project}
         onUpdate={fetchProjectDetails}
       />
-
     </div>
   );
 };

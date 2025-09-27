@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { toast } from 'react-hot-toast';
 import close from "../../assets/close-icon.png";
+import { API_BASE_URL } from "../../utils/api";
 
 const ProjectModal = ({ isOpen, onClose, setRefresh }) => {
   const [allMembers, setAllMembers] = useState([]);
@@ -20,7 +21,7 @@ const ProjectModal = ({ isOpen, onClose, setRefresh }) => {
   const fetchMembers = async () => {
     try {
       const token = sessionStorage.getItem("authToken");
-      const res = await axios.get("http://localhost:5000/api/members", {
+      const res = await axios.get(`${API_BASE_URL}/api/members`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAllMembers(res.data.users);
@@ -43,7 +44,7 @@ const ProjectModal = ({ isOpen, onClose, setRefresh }) => {
 
     try {
       const token = sessionStorage.getItem("authToken");
-      const res = await axios.post("http://localhost:5000/api/projects", data, {
+      const res = await axios.post(`${API_BASE_URL}/api/projects`, data, {
         headers: {
           Authorization: `Bearer ${token}`
         }

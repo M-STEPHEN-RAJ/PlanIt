@@ -6,6 +6,7 @@ import convertTime from "../utils/convertTime";
 import add from "../assets/add-icon.png";
 import Progressbar from "../Components/Progressbar";
 import ProjectModal from "../Components/Modals/ProjectModal";
+import { API_BASE_URL } from "../utils/api";
 
 const Projects = () => {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ const Projects = () => {
         return;
       }
 
-      const res = await axios.get("http://localhost:5000/api/projects", {
+      const res = await axios.get(`${API_BASE_URL}/api/projects`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

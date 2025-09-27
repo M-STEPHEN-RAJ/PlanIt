@@ -7,6 +7,7 @@ import edit_icon from "../assets/edit-icon.png";
 import delete_icon from "../assets/delete-icon.png";
 import { useState } from "react";
 import { useEffect } from "react";
+import { API_BASE_URL } from "../utils/api";
 
 const Members = () => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const Members = () => {
         return;
       }
 
-      const res = await axios.get("http://localhost:5000/api/members", {
+      const res = await axios.get(`${API_BASE_URL}/api/members`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -84,7 +85,7 @@ const Members = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-5">
+                {/* <div className="flex items-center gap-5">
                   <div className="w-fit p-2 hover:bg-gray-500/10 rounded-full cursor-pointer">
                     <img className="w-5" src={edit_icon} alt="" />
                   </div>
@@ -92,7 +93,7 @@ const Members = () => {
                   <div className="w-fit p-2 hover:bg-gray-500/10 rounded-full cursor-pointer">
                     <img className="w-5" src={delete_icon} alt="" />
                   </div>
-                </div>
+                </div> */}
               </div>
             ))}
       </div>

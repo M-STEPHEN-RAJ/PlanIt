@@ -4,6 +4,7 @@ import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import close from "../../assets/close-icon.png";
 import dropdown from "../../assets/dropdown-icon.png";
+import { API_BASE_URL } from "../../utils/api";
 
 const TaskModal = ({
   status,
@@ -35,7 +36,7 @@ const TaskModal = ({
     try {
       const token = sessionStorage.getItem("authToken");
 
-      const res = await axios.get("http://localhost:5000/api/projects", {
+      const res = await axios.get(`${API_BASE_URL}/api/projects`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -66,7 +67,7 @@ const TaskModal = ({
       }
 
       const res = await axios.post(
-        `http://localhost:5000/api/projects/tasks/${projectId}`,
+        `${API_BASE_URL}/api/projects/tasks/${projectId}`,
         {
           title,
           status,
@@ -106,7 +107,7 @@ const TaskModal = ({
       }
 
       const res = await axios.put(
-        `http://localhost:5000/api/projects/tasks/${task._id}`,
+        `${API_BASE_URL}/api/projects/tasks/${task._id}`,
         {
           title,
           status,

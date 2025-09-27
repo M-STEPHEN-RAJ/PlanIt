@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import close from "../../assets/close-icon.png";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { API_BASE_URL } from '../../utils/api'
 
 const CalendarModal = ({
   isOpen,
@@ -51,7 +52,7 @@ const CalendarModal = ({
       if (eventToEdit) {
         // UPDATE event
         res = await axios.put(
-          `http://localhost:5000/api/events/${eventToEdit.id}`,
+          `${API_BASE_URL}/api/events/${eventToEdit.id}`,
           { title, date: isoDate, meetLink },
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -59,7 +60,7 @@ const CalendarModal = ({
       } else {
         // CREATE new event
         res = await axios.post(
-          "http://localhost:5000/api/events",
+          `${API_BASE_URL}/api/events`,
           { title, date: isoDate, meetLink },
           { headers: { Authorization: `Bearer ${token}` } }
         );
