@@ -30,7 +30,7 @@ const Dashboard = () => {
     try {
       const token = sessionStorage.getItem("authToken");
 
-      const res = await axios.get(`http://localhost:5000/api/dashboard`, {
+      const res = await axios.get(`${API_BASE_URL}/api/dashboard`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
