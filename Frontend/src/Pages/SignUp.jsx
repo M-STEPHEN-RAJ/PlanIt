@@ -46,6 +46,8 @@ const SignUp = () => {
         password: formData.password
       })
 
+      sessionStorage.setItem("authToken", res.data.token);
+
       toast.success("User signed up successfully!");
 
       navigate('/dashboard');

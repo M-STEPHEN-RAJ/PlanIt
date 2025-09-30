@@ -8,6 +8,7 @@ import projectRoutes from './routes/projectRoutes.js'
 import taskRoutes from './routes/taskRoutes.js'
 import memberRoutes from './routes/memberRoutes.js'
 import eventRoutes from './routes/eventRoutes.js'
+import dashboardRoutes from "./routes/dashboardRoutes.js";
 
 dotenv.config();
 
@@ -32,6 +33,7 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api/users', userRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/projects', taskRoutes);
 app.use('/api/members', memberRoutes);

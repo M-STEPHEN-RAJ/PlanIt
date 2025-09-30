@@ -115,7 +115,7 @@ const Navbar = () => {
 
           {showProfile && (
             <div className="absolute min-w-[265px] flex flex-col items-center gap-5 top-16 right-3 bg-white border border-gray-300 rounded-md p-4 z-50">
-              <p className="text-sm font-medium text-gray-600">{user.email}</p>
+              <p className="text-sm font-medium text-gray-600">{user?.email}</p>
 
               <div className="flex flex-col items-center gap-2">
                 <div
@@ -131,7 +131,7 @@ const Navbar = () => {
                     <img src={camera} className="w-7 p-1.5" alt="" />
                   </div>
                 </div>
-                <h2 className="font-semibold text-lg">{user.name}</h2>
+                <h2 className="font-semibold text-lg">{user?.name}</h2>
               </div>
 
               <div className="w-full flex justify-center gap-3">
