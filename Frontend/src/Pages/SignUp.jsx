@@ -4,10 +4,13 @@ import { toast } from 'react-hot-toast';
 import logo from '../assets/planit-logo.png'
 import { useNavigate } from 'react-router-dom'
 import { API_BASE_URL } from '../utils/api';
+import Loading from '../Components/Loading';
 
 const SignUp = () => {
 
   const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -39,6 +42,8 @@ const SignUp = () => {
       return toast.error("Please agree to terms & conditions");
     }
 
+    setLoading(true);
+
     try {
       const res = await axios.post(`${API_BASE_URL}/api/users/signup`, {
         name: formData.name,
@@ -55,6 +60,9 @@ const SignUp = () => {
     catch (error) {
       toast.error(error.response?.data?.message || "Signup failed!")
     }
+    finally {
+      setLoading(false);
+    }
   }
 
   const handleChange = (e) => {
@@ -67,6 +75,8 @@ const SignUp = () => {
 
   return (
     <>
+
+    {loading && <Loading />}    
 
     <div className="h-screen w-screen flex justify-center items-center">
 

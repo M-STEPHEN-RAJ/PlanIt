@@ -98,8 +98,10 @@ const Navbar = () => {
           ref={profileRef}
           className="flex justify-center items-center gap-3"
         >
-          <div className="w-fit p-2 hover:bg-gray-500/10 rounded-full cursor-pointer">
-            <img className="w-5" src={notification} alt="" />
+          <div
+            onClick={() => navigate('/notification')} 
+            className="w-fit p-2 hover:bg-gray-500/10 rounded-full cursor-pointer">
+              <img className="w-5" src={notification} alt="" />
           </div>
 
           <div className="w-fit p-2 hover:bg-gray-500/10 rounded-full cursor-pointer">

@@ -12,6 +12,7 @@ import ProjectDetails from './Pages/ProjectDetails'
 import Calendar from './Pages/Calendar'
 import Members from './Pages/Members'
 import { useSidebar } from './Context/SidebarContext'
+import Notification from './Pages/Notification'
 
 const App = () => {
 
@@ -49,6 +50,7 @@ const App = () => {
           <Route path='/projects/:id' element={<ProjectDetails />}/>
           <Route path='/calendar' element={<Calendar />}/>
           <Route path='/members' element={<Members />}/>
+          <Route path='/notification' element={<Notification />}/>
         </Routes>
       </div>
 

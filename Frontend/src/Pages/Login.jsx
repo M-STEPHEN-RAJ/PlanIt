@@ -4,10 +4,13 @@ import { toast } from 'react-hot-toast';
 import logo from '../assets/planit-logo.png'
 import { useNavigate } from 'react-router-dom'
 import { API_BASE_URL } from '../utils/api';
+import Loading from '../Components/Loading';
 
 const Login = () => {
 
   const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -23,6 +26,8 @@ const Login = () => {
     if (!formData.password.trim()) {
       return toast.error("Password is required");
     }
+
+    setLoading(true);
 
     try {
         const res = await axios.post(`${API_BASE_URL}/api/users/login`, {
@@ -40,6 +45,9 @@ const Login = () => {
     catch (error) {
         toast.error(error.response?.data?.message || "Login failed!");        
     }
+    finally {
+      setLoading(false);
+    }
   }
 
   const handleChange = (e) => {
@@ -52,6 +60,8 @@ const Login = () => {
 
   return (
     <>
+
+    {loading && <Loading />}    
 
     <div className="h-screen w-screen flex justify-center items-center">
 
