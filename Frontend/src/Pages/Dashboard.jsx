@@ -9,6 +9,7 @@ import date from "../assets/date-icon.png";
 import add from "../assets/add-icon.png";
 import { API_BASE_URL } from "../utils/api";
 import Progressbar from "../Components/Progressbar";
+import TaskChart from "../Components/TaskChart";
 import convertTime from "../utils/convertTime";
 
 const Dashboard = () => {
@@ -247,7 +248,7 @@ const Dashboard = () => {
                 ))}
 
                 <div
-                  onClick={() => navigate("/projects")}
+                  onClick={() => navigate("/projects", { state: { openModal: true } })}
                   className="h-32 flex justify-center items-center gap-3 rounded border border-gray-300 border-dashed cursor-pointer"
                 >
                   <img className="w-4" src={add} alt="" />
@@ -256,6 +257,11 @@ const Dashboard = () => {
               </div>
             )}
           </div>
+
+          <div className="">
+            <TaskChart projects={recentProjects} />
+          </div>
+
         </div>
       )}
     </>

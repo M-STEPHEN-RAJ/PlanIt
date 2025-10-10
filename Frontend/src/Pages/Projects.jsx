@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import convertTime from "../utils/convertTime";
 import add from "../assets/add-icon.png";
 import Progressbar from "../Components/Progressbar";
@@ -9,7 +9,9 @@ import ProjectModal from "../Components/Modals/ProjectModal";
 import { API_BASE_URL } from "../utils/api";
 
 const Projects = () => {
+
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refresh, setRefresh] = useState(false);
@@ -20,6 +22,13 @@ const Projects = () => {
   useEffect(() => {
     fetchProjects();
   }, [refresh]);
+
+  useEffect(() => {
+    if (location.state?.openModal) {
+      setIsModalOpen(true);
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location, navigate]);
 
   const fetchProjects = async () => {
     try {

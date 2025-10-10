@@ -13,6 +13,8 @@ import { useNavigate } from "react-router-dom";
 import AvatarModal from "./Modals/AvatarModal";
 import LogoutModal from "./Modals/LogoutModal";
 import { API_BASE_URL } from "../utils/api";
+import TermsModal from "./Modals/TermsModal";
+import PrivacyModal from "./Modals/PrivacyModal";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -21,6 +23,8 @@ const Navbar = () => {
 
   const [showProfile, setShowProfile] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
   const [user, setUser] = useState(null);
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -149,11 +153,17 @@ const Navbar = () => {
               </div>
 
               <p className="text-xs text-gray-500">
-                <span className="cursor-pointer hover:underline">
+                <span 
+                  onClick={() => setShowTerms(true)}
+                  className="cursor-pointer hover:underline"
+                >
                   Terms & Conditions
                 </span>{" "}
                 &nbsp; • &nbsp;{" "}
-                <span className="cursor-pointer hover:underline">
+                <span 
+                  onClick={() => setShowPrivacy(true)} 
+                  className="cursor-pointer hover:underline"
+                >
                   Privacy Policy
                 </span>
               </p>
@@ -177,6 +187,18 @@ const Navbar = () => {
         <LogoutModal
           onConfirm={handleLogout}
           onCancel={() => setShowLogoutModal(false)}
+        />
+      )}
+
+      {showTerms && (
+        <TermsModal 
+          onClose={() => setShowTerms(false)}
+        />
+      )}
+
+      {showPrivacy && (
+        <PrivacyModal 
+          onClose={() => setShowPrivacy(false)}
         />
       )}
 
