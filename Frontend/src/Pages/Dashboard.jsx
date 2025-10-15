@@ -9,6 +9,7 @@ import date from "../assets/date-icon.png";
 import add from "../assets/add-icon.png";
 import { API_BASE_URL } from "../utils/api";
 import Progressbar from "../Components/Progressbar";
+import ProjectChart from "../Components/ProjectChart";
 import TaskChart from "../Components/TaskChart";
 import convertTime from "../utils/convertTime";
 
@@ -23,6 +24,8 @@ const Dashboard = () => {
   });
 
   const [recentProjects, setRecentProjects] = useState([]);
+  const [allProjects, setAllProjects] = useState([]);
+  const [allTasks, setAllTasks] = useState([]);
 
   const [loading, setLoading] = useState(true);
 
@@ -38,7 +41,9 @@ const Dashboard = () => {
 
       if (res.data.success) {
         setSummary(res.data.summary);
+        setAllProjects(res.data.allProjects || []);
         setRecentProjects(res.data.recentProjects || []);
+        setAllTasks(res .data.tasks || []);
       }
     } catch (error) {
       console.error("Failed to fetch data", error);
@@ -258,8 +263,9 @@ const Dashboard = () => {
             )}
           </div>
 
-          <div className="">
-            <TaskChart projects={recentProjects} />
+          <div className="flex gap-3">
+            <ProjectChart projects={allProjects} />
+            <TaskChart tasks={Object.entries(allTasks).map(([status, count]) => ({ status, count }))} />
           </div>
 
         </div>

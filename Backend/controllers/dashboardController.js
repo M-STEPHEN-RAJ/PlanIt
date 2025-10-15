@@ -42,6 +42,33 @@ export const getDashboardCard = async (req, res) => {
         .populate("members", "name avatar")
         .populate("createdBy", "name avatar");
 
+        const allProjects = await Project.find({
+            $or: [{ members: userId }, { createdBy: userId }],
+        })
+        .select("status progress createdAt")
+        .populate("members", "name avatar");
+
+        // Task Summary
+        const projectIds = allProjects.map((p) => p._id);
+
+            const taskStatus = await Task.aggregate([
+            { $match: { projectId: { $in: projectIds } } },
+            { $group: { _id: "$status", count: { $sum: 1 } } },
+            ]);
+
+            const taskSummary = {
+            total: 0,
+            assigned: 0,
+            progress: 0,
+            review: 0,
+            done: 0,
+            };
+
+            taskStatus.forEach((item) => {
+            taskSummary[item._id] = item.count;
+            taskSummary.total += item.count;
+        });
+
         res.json({
             success: true,
             summary: {
@@ -50,8 +77,11 @@ export const getDashboardCard = async (req, res) => {
                 created: createdCount,
                 dueSoon: dueSoonTasks.length
             },
-            recentProjects
+            allProjects,
+            recentProjects,
+            tasks: taskSummary,
         })
+
     }
 
     catch (error) {

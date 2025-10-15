@@ -7,8 +7,15 @@ export const SidebarProvider = ({ children }) => {
 
     const location = useLocation();
 
-    const [openSidebar, setOpenSidebar] = useState(true);
+    const [openSidebar, setOpenSidebar] = useState(() => {
+        const saved = sessionStorage.getItem("openSidebar");
+        return saved !== null ? JSON.parse(saved) : true;
+    });
     const [sidebarActive, setSidebarActive] = useState('');
+
+    useEffect(() => {
+        sessionStorage.setItem("openSidebar", JSON.stringify(openSidebar));
+    }, [openSidebar]);
 
     useEffect(() => {
 

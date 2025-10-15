@@ -58,7 +58,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`flex flex-col justify-between h-[calc(100vh-56px)] border-r border-r-gray-300 ${
+      className={`flex flex-col justify-between h-[calc(100vh-56px)] border-r border-r-gray-300 bg-white ${
         openSidebar
           ? 'w-0 overflow-hidden px-0 py-3'
           : 'w-60 px-3 py-3'

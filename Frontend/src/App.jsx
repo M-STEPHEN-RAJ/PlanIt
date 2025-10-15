@@ -33,7 +33,7 @@ const App = () => {
       </div>
     )}
 
-    <div className={`${hideLayout ? '' : 'flex mt-14'}`}>
+    <div className={`${hideLayout ? '' : 'flex mt-14'} transition-all duration-200`}>
 
       {!hideLayout && (
         <div className="fixed top-14 left-0 z-50">
@@ -41,7 +41,7 @@ const App = () => {
         </div>
       )}
     
-      <div className={`${hideLayout ? 'w-full' : openSidebar ? '' : 'ml-60'} flex-1`}>
+      <div className={`${hideLayout ? 'w-full' : openSidebar ? '' : 'ml-60'} flex-1 transition-all duration-200`}>
         <Routes>
           <Route path='/' element={<SignUp />}/>
           <Route path='/login' element={<Login />}/>
