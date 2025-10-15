@@ -3,7 +3,7 @@ import close from "../../assets/close-icon.png";
 
 const TermsModal = ({ onClose }) => {
   return (
-    <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-[9999]">
+    <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-[100]">
       <div className="bg-white p-6 rounded-lg w-full max-w-[700px] max-h-[80vh] relative flex flex-col">
 
         {/* Sticky Header */}

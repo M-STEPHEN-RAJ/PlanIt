@@ -118,7 +118,7 @@ const AvatarModal = ({ onClose, profileRef, avatar, onAvatarChange }) => {
   return (
     <div
       ref={profileRef}
-      className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/20 flex items-center justify-center z-[100]"
     >
       <div className="bg-white p-4 rounded-lg w-full max-w-[350px] relative">
         {/* Header */}

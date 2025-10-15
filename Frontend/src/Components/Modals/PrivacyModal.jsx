@@ -3,11 +3,11 @@ import close from "../../assets/close-icon.png";
 
 const PrivacyModal = ({ onClose }) => {
   return (
-    <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-[9999]">
+    <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-[100]">
       <div className="bg-white p-6 rounded-lg w-full max-w-[700px] max-h-[80vh] relative flex flex-col">
 
         {/* Sticky Header */}
-        <div className="flex justify-between items-center sticky top-0 bg-white pb-3 z-10">
+        <div className="flex justify-between items-center sticky top-0 bg-white pb-3 z-[100]">
           <h2 className="text-lg font-semibold">Privacy Policy</h2>
           <div
             onClick={onClose}

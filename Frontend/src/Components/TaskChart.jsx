@@ -37,7 +37,7 @@ const TaskChart = ({ tasks }) => {
     plugins: {
       legend: {
         display: true,
-        position: "bottom",
+        position: "right",
         labels: {
           usePointStyle: true,
           pointStyle: "circle",
@@ -51,7 +51,7 @@ const TaskChart = ({ tasks }) => {
 
   return (
     <div className="w-full max-w-[400px] mx-auto mt-5 p-4 border border-gray-300 rounded-lg">
-      <h2 className="text-lg font-semibold mb-3">Task Status Overview</h2>
+      <h2 className="text-lg font-semibold">Task Status Overview</h2>
       <Pie data={data} options={options} />
     </div>
   );

@@ -91,7 +91,7 @@ const ProjectDetailsModal = ({ isOpen, onClose, project, onUpdate }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-[9999]">
+    <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-[100]">
       <div className="bg-white space-y-5 p-6 rounded-lg w-full max-w-[500px] relative">
         <div className="flex justify-between items-center">
           <h2 className="text-lg font-semibold">Update Project</h2>
