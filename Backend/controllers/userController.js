@@ -7,6 +7,10 @@ export const SignUp = async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
+        if (!name || !email || !password) {
+            return res.status(400).json({ message: "All fields are required!" });
+        }
+
         const userExists = await User.findOne({ email });
         if(userExists) {
             return res.status(400).json({ message: "User already exists!" });
@@ -43,6 +47,10 @@ export const Login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
+        if (!email || !password) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
         const user = await User.findOne({ email });
         if(!user) {
             return res.status(400).json({ message: "Invalid email or password!" });
@@ -65,6 +73,9 @@ export const Login = async (req, res) => {
         })
     }
     catch (error) {
+        if (error.code === 11000) {
+            return res.status(409).json({ message: "Email already exists" });
+        }
         return res.status(500).json({ message: "Failed to login", error: error.message })
     }
 }
